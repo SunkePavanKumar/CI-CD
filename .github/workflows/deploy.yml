@@ -28,3 +28,16 @@ jobs:
 
     - name: Verify Pushed Image
       run: docker pull devindevil/user-app:latest 
+    
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ vars.SSH_HOST }}
+        username: ${{ vars.SSH_USERNAME }}
+        key: ${{ vars.SSH_KEY }}
+        script: |
+          sudo docker pull devindevil/user-app:latest
+          sudo docker stop user-app || true
+          sudo docker rm user-app || true
+          sudo docker run -d --name user-app -p 3005:3000 devindevil/user-app:latest
